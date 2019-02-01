@@ -10,5 +10,7 @@
 #include "stm32f4_discovery.h"
 
 void init_encoders();
+uint32_t getCounts(uint32_t counts[]);
+void resetCounts();
 
 #endif /* MOTOR_MODULE_H_ */
