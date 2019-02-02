@@ -3,8 +3,8 @@
 uint32_t initialCount = 0x7FFF;
 
 // moteur 1: PE9, PE11
-// moteur 2: PA0, PA1
-// moteur 3: PC6, PB4
+// moteur 2: PA5, PB3
+// moteur 3: PC6, PB5
 // moteur 4; PD12, PD13
 
 void init_timer(TIM_TypeDef* TIMX)
@@ -34,31 +34,32 @@ void init_encoders()
 	GPIO_PinAFConfig(GPIOE, GPIO_PinSource9,  GPIO_AF_TIM1);
 	GPIO_PinAFConfig(GPIOE, GPIO_PinSource11, GPIO_AF_TIM1);
 
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource0,  GPIO_AF_TIM2);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource1,  GPIO_AF_TIM2);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource5,  GPIO_AF_TIM2);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource3,  GPIO_AF_TIM2);
 
 	GPIO_PinAFConfig(GPIOC, GPIO_PinSource6,  GPIO_AF_TIM3);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource4,  GPIO_AF_TIM3);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource5,  GPIO_AF_TIM3);
 
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource12, GPIO_AF_TIM4);
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource13, GPIO_AF_TIM4);
 
 	GPIO_InitTypeDef GPIO_InitStruct;
 
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_11;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
 	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_100MHz;
+
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_11;
 	GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_5;
 	GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_6;
 	GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_4;
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_3;
 	GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13;
@@ -70,14 +71,12 @@ void init_encoders()
 	init_timer(TIM4);
 }
 
-uint32_t getCounts(uint32_t counts[])
+void getCounts(int32_t counts[])
 {
-	counts[0] = TIM1 -> CNT;
-	counts[1] = TIM2 -> CNT;
-	counts[2] = TIM3 -> CNT;
-	counts[3] = TIM4 -> CNT;
-
-	return initialCount;
+	counts[0] = (TIM1 -> CNT) - initialCount;
+	counts[1] = (TIM2 -> CNT) - initialCount;
+	counts[2] = (TIM3 -> CNT) - initialCount;
+	counts[3] = (TIM4 -> CNT) - initialCount;
 }
 
 void resetCounts()
