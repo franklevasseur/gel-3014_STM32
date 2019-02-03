@@ -10,9 +10,9 @@
 
 #include "stm32f4_discovery.h"
 
-void configure_timer_af(void);
-void configure_timer_freq(uint16_t prescaler, uint16_t period);
-void configure_timer_pwm(int channel, uint16_t ccr);
+void configure_pwm_af(void);
+void configure_pwm_freq(uint16_t prescaler, uint16_t period);
+void configure_pwm_ccr(int channel, uint16_t ccr);
 void start_pwm(void);
 
 #endif /* PWM_MODULE_H_ */

@@ -33,7 +33,7 @@ uint8_t TIM_AF = GPIO_AF_TIM5;
 
 uint16_t TIM_OCMode_PWMX = TIM_OCMode_PWM1;
 
-void configure_timer_af(void)
+void configure_pwm_af(void)
 {
 	RCC_APB1PeriphClockCmd(TIM_CLCK, ENABLE);
 
@@ -54,7 +54,7 @@ void configure_timer_af(void)
 	GPIO_PinAFConfig(GPIOX, GPIO_PinSourceX4, TIM_AF);
 }
 
-void configure_timer_freq(uint16_t prescaler, uint16_t period)
+void configure_pwm_freq(uint16_t prescaler, uint16_t period)
 {
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 
@@ -67,7 +67,7 @@ void configure_timer_freq(uint16_t prescaler, uint16_t period)
 	TIM_TimeBaseInit(TIMX, &TIM_TimeBaseStructure);
 }
 
-void configure_timer_pwm(int channel, uint16_t ccr)
+void configure_pwm_ccr(int channel, uint16_t ccr)
 {
 	TIM_OCInitTypeDef  TIM_OCInitStructure;
 
@@ -77,16 +77,23 @@ void configure_timer_pwm(int channel, uint16_t ccr)
 	TIM_OCInitStructure.TIM_Pulse = ccr;
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 
-	if (channel == 1) {
+	if (channel == 1)
+	{
 		TIM_OC1Init(TIMX, &TIM_OCInitStructure);
 		TIM_OC1PreloadConfig(TIMX, TIM_OCPreload_Enable);
-	} else if (channel == 2) {
+	}
+	else if (channel == 2)
+	{
 		TIM_OC2Init(TIMX, &TIM_OCInitStructure);
 		TIM_OC2PreloadConfig(TIMX, TIM_OCPreload_Enable);
-	} else if (channel == 3) {
+	}
+	else if (channel == 3)
+	{
 		TIM_OC3Init(TIMX, &TIM_OCInitStructure);
 		TIM_OC3PreloadConfig(TIMX, TIM_OCPreload_Enable);
-	} else if (channel == 4) {
+	}
+	else if (channel == 4)
+	{
 		TIM_OC4Init(TIMX, &TIM_OCInitStructure);
 		TIM_OC4PreloadConfig(TIMX, TIM_OCPreload_Enable);
 	}
