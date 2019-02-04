@@ -11,6 +11,11 @@
 #include "pwm_module.h"
 #include "encoder_module.h"
 #include "bridge_module.h"
+#include "instruction_buffer.h"
+#include "instruction_parser.h"
+#include "uart_module.h"
+
+#include "stm32f4_discovery.h"
 
 void do_motor_control(void);
 void controlMotors(void);

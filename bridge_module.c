@@ -1,6 +1,8 @@
 #include "bridge_module.h"
 #include "stm32f4_discovery.h"
 
+// utilise GPIOD avec les pins 1-4 et 6-9
+
 uint32_t allPins = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4
 | GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
 

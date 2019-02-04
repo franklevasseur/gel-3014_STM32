@@ -8,6 +8,23 @@ int32_t cumulativesErr[4] = {0};
 
 void do_motor_control(void) {
 
+	while(1) {
+    	char nextByte = readInstructionBuffer();
+    	if (nextByte != '\0') {
+    		char currentInstruction[4] = {'\0'};
+			if (parseInstruction(nextByte, currentInstruction)) {
+				char motor = currentInstruction[0];
+				char action = currentInstruction[1];
+				char reference = currentInstruction[2];
+				char checkSum = currentInstruction[3];
+
+				// faire une action
+			}
+    	}
+
+		uart_write(69);
+		uart_write(42);
+	}
 }
 
 void controlMotors(void)

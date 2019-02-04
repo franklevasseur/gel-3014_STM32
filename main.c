@@ -4,6 +4,7 @@
 #include "bridge_module.h"
 #include "speed_sample_process.h"
 #include "motor_control_process.h"
+#include "uart_module.h"
 #include "stm32f4_discovery.h"
 
 /* Private typedef -----------------------------------------------------------*/
@@ -12,10 +13,13 @@
 #define CONTROL 1
 #define SPEED 0
 
+#define SAMPLING_FREQ 50
+
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 void init_systick(void);
+void testAction(void);
 void delay(uint32_t counts);
 
 int main(void)
@@ -36,18 +40,17 @@ int main(void)
 	init_encoders();
 	init_bridge_pins();
 	init_systick();
+	init_uart(9600);
 
 	if (SPEED) {
 		do_speed_sampling();
 	} else if (CONTROL) {
 		do_motor_control();
 	}
-
-	while (1);
 }
 
 void init_systick(void) {
-	if (SysTick_Config(SystemCoreClock / 100))
+	if (SysTick_Config(SystemCoreClock / SAMPLING_FREQ))
 	{
 		/* Capture error */
 		while (1);
@@ -59,6 +62,19 @@ void SysTick_Handler(void) {
 		controlMotors();
 	} else if (SPEED) {
 		mesureSpeeds();
+	} else {
+		testAction();
+	}
+}
+
+int state = 1;
+void testAction(void) {
+	if (state) {
+		GPIO_SetBits(GPIOD, GPIO_Pin_1);
+		state = 0;
+	} else {
+		GPIO_ResetBits(GPIOD, GPIO_Pin_1);
+		state = 1;
 	}
 }
 
