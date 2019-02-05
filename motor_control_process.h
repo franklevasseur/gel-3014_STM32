@@ -17,7 +17,7 @@
 
 #include "stm32f4_discovery.h"
 
-void do_motor_control(void);
+void do_motor_control(uint32_t p_sampling_frequency);
 void controlMotors(void);
 
 #endif /* MOTOR_CONTROL_PROCESS_H_ */

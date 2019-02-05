@@ -11,8 +11,9 @@
 #include "pwm_module.h"
 #include "encoder_module.h"
 #include "bridge_module.h"
+#include "uart_module.h"
 
 void mesureSpeeds(void);
-void do_speed_sampling(void);
+void do_speed_sampling(uint32_t p_sampling_frequency);
 
 #endif /* SPEED_SAMPLE_PROCESS_H_ */

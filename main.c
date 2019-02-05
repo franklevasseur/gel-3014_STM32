@@ -10,10 +10,10 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
-#define CONTROL 1
-#define SPEED 0
+#define CONTROL 0
+#define SPEED 1
 
-#define SAMPLING_FREQ 50
+#define SAMPLING_FREQ 30
 
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
@@ -43,10 +43,12 @@ int main(void)
 	init_uart(9600);
 
 	if (SPEED) {
-		do_speed_sampling();
+		do_speed_sampling(SAMPLING_FREQ);
 	} else if (CONTROL) {
-		do_motor_control();
+		do_motor_control(SAMPLING_FREQ);
 	}
+
+	while(1); // oups
 }
 
 void init_systick(void) {
