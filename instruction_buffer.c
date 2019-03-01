@@ -14,7 +14,7 @@ char readInstructionBuffer() {
 		readIndex = (readIndex + 1) % BUFFERSIZE;
 		return byte;
 	}
-	return '\0';
+	return 0xFF;
 }
 
 void writeInstructionBuffer(char byte) {

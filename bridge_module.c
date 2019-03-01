@@ -35,12 +35,12 @@ void init_bridge_pins(void) {
 	motor_struct.pin2 = GPIO_Pin_7;
 	motors[1] = motor_struct;
 
-	motor_struct.pin1 = GPIO_Pin_3;
-	motor_struct.pin2 = GPIO_Pin_8;
+	motor_struct.pin1 = GPIO_Pin_8; // ont été inversés pour que ca tourne clockwise
+	motor_struct.pin2 = GPIO_Pin_3;
 	motors[2] = motor_struct;
 
-	motor_struct.pin1 = GPIO_Pin_4;
-	motor_struct.pin2 = GPIO_Pin_9;
+	motor_struct.pin1 = GPIO_Pin_9; // ont été inversés pour que ca tourne clockwise
+	motor_struct.pin2 = GPIO_Pin_4;
 	motors[3] = motor_struct;
 }
 

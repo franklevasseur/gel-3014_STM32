@@ -8,9 +8,9 @@
 #ifndef BRIDGE_MODULE_H_
 #define BRIDGE_MODULE_H_
 
-#define BLOCK 0
-#define CW 1
-#define CCW 2
+#define BLOCK 1
+#define CW 2
+#define CCW 3
 
 void init_bridge_pins(void);
 void set_motor_action(int motor, int action);

@@ -71,3 +71,11 @@ void uart_write(char byte) {
 	UARTX->DR = byte;
 	return;
 }
+
+void transmit_sample(int16_t sample) {
+	char firstByte = (char)(sample & 0xFF);
+	char secondByte = (char)((sample >> 8) & 0xFF);
+
+	uart_write(firstByte);
+	uart_write(secondByte);
+}

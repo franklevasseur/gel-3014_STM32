@@ -8,6 +8,8 @@
 #ifndef INSTRUCTION_PARSER_H_
 #define INSTRUCTION_PARSER_H_
 
-int parseInstruction(char byte, char fullInstruction[4]);
+#include "stm32f4_discovery.h"
+
+int parseInstruction(char byte, uint16_t fullInstruction[5]);
 
 #endif /* INSTRUCTION_PARSER_H_ */

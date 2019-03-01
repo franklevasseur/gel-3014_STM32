@@ -13,5 +13,6 @@
 
 void uart_write(char p_data);
 void init_uart(uint32_t baudrate);
+void transmit_sample(int16_t sample);
 
 #endif /* UART_MODULE_H_ */

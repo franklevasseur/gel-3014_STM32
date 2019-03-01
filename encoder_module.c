@@ -79,10 +79,16 @@ void init_timer(TIM_TypeDef* TIMX)
 
 void getCounts(int32_t counts[])
 {
-	counts[0] = (TIM1 -> CNT) - initialCount;
-	counts[1] = (TIM2 -> CNT) - initialCount;
-	counts[2] = (TIM3 -> CNT) - initialCount;
-	counts[3] = (TIM4 -> CNT) - initialCount;
+//	counts[0] = (TIM1 -> CNT) - initialCount;
+//	counts[1] = (TIM2 -> CNT) - initialCount;
+//	counts[2] = (TIM3 -> CNT) - initialCount;
+//	counts[3] = (TIM4 -> CNT) - initialCount;
+
+	// Le shield est fucké fait qu'on a du refaire la correspondance
+	counts[0] = (TIM2 -> CNT) - initialCount;
+	counts[1] = (TIM3 -> CNT) - initialCount;
+	counts[2] = (TIM4 -> CNT) - initialCount;
+	counts[3] = (TIM1 -> CNT) - initialCount;
 }
 
 void resetCounts()

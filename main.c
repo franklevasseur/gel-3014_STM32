@@ -10,10 +10,10 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
-#define CONTROL 0
-#define SPEED 1
+#define CONTROL 1
+#define SPEED 0
 
-#define SAMPLING_FREQ 30
+#define SAMPLING_FREQ 100
 
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
