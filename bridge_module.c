@@ -47,8 +47,8 @@ void init_bridge_pins(void) {
 void set_motor_action(int motor, int action) {
 	if (action == BLOCK)
 	{
-		GPIO_ResetBits(GPIOY, motors[motor - 1].pin1);
-		GPIO_ResetBits(GPIOY, motors[motor - 1].pin2);
+		GPIO_SetBits(GPIOY, motors[motor - 1].pin1);
+		GPIO_SetBits(GPIOY, motors[motor - 1].pin2);
 	}
 	else if (action == CW)
 	{
