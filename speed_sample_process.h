@@ -12,6 +12,7 @@
 #include "encoder_module.h"
 #include "bridge_module.h"
 #include "uart_module.h"
+#include "instruction_parser.h"
 
 void mesureSpeeds(void);
 void do_speed_sampling(uint32_t p_sampling_frequency);

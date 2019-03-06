@@ -24,7 +24,8 @@ void delay(uint32_t counts);
 
 int main(void)
 {
-	uint16_t prescaler = 1000;
+	// Ici JM !!!
+	uint16_t prescaler = 84;
 	uint16_t period = 1000;
 
 	configure_pwm_af();

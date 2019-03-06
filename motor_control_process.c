@@ -3,12 +3,12 @@
 #define MAX_SPEED 10400
 #define DEBUG_MOTOR 1
 #define TRANS_UART 0
-#define DEMO 1
+#define DEMO 0
 
 double commands[4] = {0, 0, 0, 0};
 double references[4] = {0, 0, 0, 0};
-double kp = 0.05;
-double ki = 0.4;
+double kp = 0.185;
+double ki = 1.144;
 double cumulativesErr[4] = {0, 0, 0, 0};
 uint32_t totalTick[4] = {0, 0, 0, 0};
 uint32_t maxTicks[4] = {-1, -1, -1, -1};
@@ -140,7 +140,8 @@ void controlMotors(void)
 		totalTick[motor] += counts[motor];
 
 		if (totalTick[motor] >= maxTicks[motor]) {
-			set_motor_action(motor + 1, BLOCK);
+			blockAllWheels();
+			resetTickCounts();
 		} else {
 			int32_t ticksPerSecond = counts[motor] * sampling_frequency;
 			int32_t residual = references[motor] - ticksPerSecond;
@@ -171,7 +172,15 @@ void controlMotors(void)
 		}
 	}
 
+
 	resetCounts();
+}
+
+void blockAllWheels() {
+	set_motor_action(1, BLOCK);
+	set_motor_action(2, BLOCK);
+	set_motor_action(3, BLOCK);
+	set_motor_action(4, BLOCK);
 }
 
 void resetTickCounts() {
