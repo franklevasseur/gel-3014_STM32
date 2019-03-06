@@ -106,6 +106,7 @@ void do_motor_control(uint32_t p_sampling_frequency) {
 				int motor_index = (int) motor;
 				references[motor_index - 1] = reference;
 				maxTicks[motor_index - 1] = max_tick;
+				cumulativesErr[motor_index - 1] = 0;
 
 				int action_type;
 				if (action == 0x1) {
@@ -129,6 +130,16 @@ void absoluteCounts(int32_t counts[]) {
 	}
 }
 
+void blockAllWheels() {
+	for (int motor = 0; motor < 4; motor++) {
+		set_motor_action(motor + 1, BLOCK);
+		configure_pwm_ccr(motor + 1, 0);
+		references[motor] = 0;
+		cumulativesErr[motor] = 0;
+		totalTick[motor] = 0;
+	}
+}
+
 void controlMotors(void)
 {
 	int32_t counts[4] = {0};
@@ -141,11 +152,10 @@ void controlMotors(void)
 
 		if (totalTick[motor] >= maxTicks[motor]) {
 			blockAllWheels();
-			resetTickCounts();
 		} else {
 			int32_t ticksPerSecond = counts[motor] * sampling_frequency;
 			int32_t residual = references[motor] - ticksPerSecond;
-			cumulativesErr[motor] += residual;
+			cumulativesErr[motor] += (double)residual / sampling_frequency;
 			commands[motor] = (residual * kp) + (cumulativesErr[motor] * ki);
 
 			if (commands[motor] > MAX_SPEED) {
@@ -174,18 +184,4 @@ void controlMotors(void)
 
 
 	resetCounts();
-}
-
-void blockAllWheels() {
-	set_motor_action(1, BLOCK);
-	set_motor_action(2, BLOCK);
-	set_motor_action(3, BLOCK);
-	set_motor_action(4, BLOCK);
-}
-
-void resetTickCounts() {
-	totalTick[0] = 0;
-	totalTick[1] = 0;
-	totalTick[2] = 0;
-	totalTick[3] = 0;
 }

@@ -1,6 +1,6 @@
 #include "instruction_buffer.h"
 
-#define BUFFERSIZE 40
+#define BUFFERSIZE 100
 
 char instructionsBuffer[BUFFERSIZE] = {-1};
 int readIndex = 0;
