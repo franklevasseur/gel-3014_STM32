@@ -7,11 +7,12 @@
 
 double commands[4] = {0, 0, 0, 0};
 double references[4] = {0, 0, 0, 0};
-double kp = 0.185;
-double ki = 1.144;
+double kp = 1;
+double ki = 2;
 double cumulativesErr[4] = {0, 0, 0, 0};
 uint32_t totalTick[4] = {0, 0, 0, 0};
 uint32_t maxTicks[4] = {-1, -1, -1, -1};
+int actions[4] = {1, 1, 1, 1};
 uint32_t sampling_frequency;
 
 void resetTickCounts();
@@ -31,64 +32,6 @@ void do_motor_control(uint32_t p_sampling_frequency) {
 
 	sampling_frequency = p_sampling_frequency;
 
-	if (DEMO) {
-		resetTickCounts();
-
-		// va tout drette
-		set_motor_action(1, CW);
-		set_motor_action(2, BLOCK);
-		set_motor_action(3, CCW);
-		set_motor_action(4, BLOCK);
-		references[0] = 8000;
-		references[1] = 0;
-		references[2] = 8000;
-		references[3] = 0;
-		while(totalTick[2] < 40000);
-
-		resetTickCounts();
-
-		// tourne
-		set_motor_action(1, CW);
-		set_motor_action(2, CW);
-		set_motor_action(3, CW);
-		set_motor_action(4, CW);
-		references[0] = 6000;
-		references[1] = 6000;
-		references[2] = 6000;
-		references[3] = 6000;
-		while(totalTick[2] < 10000);
-
-		resetTickCounts();
-
-		// revient voir papa
-		set_motor_action(1, CW);
-		set_motor_action(2, BLOCK);
-		set_motor_action(3, CCW);
-		set_motor_action(4, BLOCK);
-		references[0] = 5000;
-		references[1] = 0;
-		references[2] = 5000;
-		references[3] = 0;
-		while(totalTick[2] < 40000);
-
-		resetTickCounts();
-
-		set_motor_action(1, CCW);
-		set_motor_action(2, CCW);
-		set_motor_action(3, CCW);
-		set_motor_action(4, CCW);
-		references[0] = 6000;
-		references[1] = 6000;
-		references[2] = 6000;
-		references[3] = 6000;
-		while(totalTick[2] < 10000);
-
-		set_motor_action(1, BLOCK);
-		set_motor_action(2, BLOCK);
-		set_motor_action(3, BLOCK);
-		set_motor_action(4, BLOCK);
-	}
-
 	while(1) {
 
     	char nextByte = readInstructionBuffer();
@@ -106,17 +49,13 @@ void do_motor_control(uint32_t p_sampling_frequency) {
 				int motor_index = (int) motor;
 				references[motor_index - 1] = reference;
 				maxTicks[motor_index - 1] = max_tick;
-				cumulativesErr[motor_index - 1] = 0;
 
-				int action_type;
-				if (action == 0x1) {
-					action_type = BLOCK;
-				} else if (action == 0x2) {
-					action_type = CW;
-				} else if (action == 0x3) {
-					action_type = CCW;
+				int current_action = actions[motor_index - 1];
+				if (action != current_action) {
+					cumulativesErr[motor_index - 1] = 0;
 				}
-				set_motor_action(motor_index, action_type);
+				actions[motor_index - 1] = action;
+				set_motor_action(motor_index, action);
 			}
     	}
 	}
@@ -134,6 +73,7 @@ void blockAllWheels() {
 	for (int motor = 0; motor < 4; motor++) {
 		set_motor_action(motor + 1, BLOCK);
 		configure_pwm_ccr(motor + 1, 0);
+		actions[motor] = BLOCK;
 		references[motor] = 0;
 		cumulativesErr[motor] = 0;
 		totalTick[motor] = 0;

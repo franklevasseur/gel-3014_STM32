@@ -69,8 +69,10 @@ int parseInstruction(char byte, uint16_t fullInstruction[5]) {
 
 		if (isValidMotor(byte)) {
 			currentMotor = byte;
+			uart_write('1');
 		} else {
 			eraseAll();
+			uart_write('0');
 		}
 		return 0;
 	}
@@ -79,8 +81,10 @@ int parseInstruction(char byte, uint16_t fullInstruction[5]) {
 
 		if (isValidAction(byte)) {
 			currentAction = byte;
+			uart_write('2');
 		} else {
 			eraseAll();
+			uart_write('0');
 		}
 
 		return 0;
@@ -89,6 +93,7 @@ int parseInstruction(char byte, uint16_t fullInstruction[5]) {
 	if (!isRefFirstByteIn) {
 		isRefFirstByteIn = 1;
 		currentReferenceFirstByte = byte;
+		uart_write('3');
 		return 0;
 	}
 
@@ -98,8 +103,10 @@ int parseInstruction(char byte, uint16_t fullInstruction[5]) {
 			isRefIn = 1;
 			currentReferenceSecondByte = byte;
 			currentReference = ref;
+			uart_write('4');
 		} else {
 			eraseAll();
+			uart_write('0');
 		}
 		return 0;
 	}
@@ -107,6 +114,7 @@ int parseInstruction(char byte, uint16_t fullInstruction[5]) {
 	if (!isMaxTickFirstByteIn) {
 		isMaxTickFirstByteIn = 1;
 		currentMaxTickFirstByte = byte;
+		uart_write('5');
 		return 0;
 	}
 
@@ -116,14 +124,17 @@ int parseInstruction(char byte, uint16_t fullInstruction[5]) {
 			isMaxTickIn = 1;
 			currentMaxtTickSecondByte = byte;
 			currentMaxTick = max_tick;
+			uart_write('6');
 		} else {
 			eraseAll();
+			uart_write('0');
 		}
 		return 0;
 	}
 
 	if (isValidChecksum(byte)) {
 		currentChecksum = byte;
+		uart_write('7');
 
 		fullInstruction[0] = (uint16_t)currentMotor;
 		fullInstruction[1] = (uint16_t)currentAction;
@@ -135,6 +146,7 @@ int parseInstruction(char byte, uint16_t fullInstruction[5]) {
 		return 1;
 	}
 
+	uart_write('0');
 	eraseAll();
 	return 0;
 }

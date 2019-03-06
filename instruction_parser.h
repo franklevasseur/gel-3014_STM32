@@ -1,7 +1,7 @@
 /*
  * instruction_parser.h
  *
- *  Created on: 4 févr. 2019
+ *  Created on: 4 fï¿½vr. 2019
  *      Author: Francois
  */
 
@@ -9,6 +9,7 @@
 #define INSTRUCTION_PARSER_H_
 
 #include "stm32f4_discovery.h"
+#include "uart_module.h"
 
 int parseInstruction(char byte, uint16_t fullInstruction[5]);
 
