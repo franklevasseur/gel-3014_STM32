@@ -13,7 +13,7 @@
 #define CONTROL 1
 #define SPEED 0
 
-#define SAMPLING_FREQ 100
+#define SAMPLING_FREQ 30
 
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
