@@ -3,7 +3,6 @@
 #define MAX_SPEED 10400
 #define DEBUG_MOTOR 1
 #define TRANS_UART 0
-#define DEMO 0
 
 double commands[4] = {0, 0, 0, 0};
 double references[4] = {0, 0, 0, 0};
@@ -15,7 +14,8 @@ uint32_t maxTicks[4] = {-1, -1, -1, -1};
 int actions[4] = {1, 1, 1, 1};
 uint32_t sampling_frequency;
 
-void resetTickCounts();
+void absoluteCounts(int32_t counts[]);
+void blockAllWheels();
 
 void do_motor_control(uint32_t p_sampling_frequency) {
 
@@ -36,47 +36,35 @@ void do_motor_control(uint32_t p_sampling_frequency) {
 
     	char nextByte = readInstructionBuffer();
     	if (nextByte != 0xFF) {
+    		InstructionContainer container;
+    		memset(&container, 0, sizeof(container));
 
-    		GPIO_ResetBits(GPIOD, GPIO_Pin_15);
+    		if (parseInstruction(nextByte, &container)) {
+    			if (container.instructionType == INSTRUCTION_BLOCK_ALL) {
+    				blockAllWheels();
+    			}
+    			else if (container.instructionType == INSTRUCTION_SINGLE) {
+    				uint16_t motor = container.singleWheelInstruction.currentMotor;
+					uint16_t action = container.singleWheelInstruction.currentAction;
+					uint16_t reference = container.singleWheelInstruction.currentReference;
+					uint16_t max_tick = container.singleWheelInstruction.currentMaxTick;
 
-    		uint16_t currentInstruction[5] = {'\0'};
-			if (parseInstruction(nextByte, currentInstruction)) {
-				uint16_t motor = currentInstruction[0];
-				uint16_t action = currentInstruction[1];
-				uint16_t reference = currentInstruction[2];
-				uint16_t max_tick = currentInstruction[3];
+					int motor_index = (int) motor;
+					references[motor_index - 1] = reference;
+					maxTicks[motor_index - 1] = max_tick;
 
-				int motor_index = (int) motor;
-				references[motor_index - 1] = reference;
-				maxTicks[motor_index - 1] = max_tick;
-
-				int current_action = actions[motor_index - 1];
-				if (action != current_action) {
-					cumulativesErr[motor_index - 1] = 0;
-				}
-				actions[motor_index - 1] = action;
-				set_motor_action(motor_index, action);
-			}
+					int current_action = actions[motor_index - 1];
+					if (action != current_action) {
+						cumulativesErr[motor_index - 1] = 0;
+					}
+					actions[motor_index - 1] = action;
+					set_motor_action(motor_index, action);
+    			}
+    			else if (container.instructionType == INSTRUCTION_ALLWHEELS) {
+    				// changer les 4 roues
+    			}
+    		}
     	}
-	}
-}
-
-void absoluteCounts(int32_t counts[]) {
-	for (int motor = 0; motor < 4; motor++) {
-		if (counts[motor] < 0) {
-			counts[motor] = (-1) * counts[motor];
-		}
-	}
-}
-
-void blockAllWheels() {
-	for (int motor = 0; motor < 4; motor++) {
-		set_motor_action(motor + 1, BLOCK);
-		configure_pwm_ccr(motor + 1, 0);
-		actions[motor] = BLOCK;
-		references[motor] = 0;
-		cumulativesErr[motor] = 0;
-		totalTick[motor] = 0;
 	}
 }
 
@@ -124,4 +112,23 @@ void controlMotors(void)
 
 
 	resetCounts();
+}
+
+void absoluteCounts(int32_t counts[]) {
+	for (int motor = 0; motor < 4; motor++) {
+		if (counts[motor] < 0) {
+			counts[motor] = (-1) * counts[motor];
+		}
+	}
+}
+
+void blockAllWheels() {
+	for (int motor = 0; motor < 4; motor++) {
+		set_motor_action(motor + 1, BLOCK);
+		configure_pwm_ccr(motor + 1, 0);
+		actions[motor] = BLOCK;
+		references[motor] = 0;
+		cumulativesErr[motor] = 0;
+		totalTick[motor] = 0;
+	}
 }
