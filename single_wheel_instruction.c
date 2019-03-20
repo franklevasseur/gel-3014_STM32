@@ -7,6 +7,8 @@
 
 #include "single_wheel_instruction.h"
 
+#define SINGLE_WHEEL_CHECK_SUM 128
+
 char currentMotor = '\0';
 char currentAction = '\0';
 
@@ -47,7 +49,7 @@ int isValidChecksum(char byte) {
 			+ currentReferenceSecondByte
 			+ currentMaxTickFirstByte
 			+ currentMaxtTickSecondByte
-			+ byte) % 256;
+			+ byte) % SINGLE_WHEEL_CHECK_SUM;
 	return sum == 0;
 }
 
@@ -73,73 +75,73 @@ void singleWheelEraseAll() {
 int single_wheel_handle_next_byte(char byte, SingleWheelInstruction * instruction) {
 	if (currentMotor == '\0') {
 
-			if (isValidMotor(byte)) {
-				currentMotor = byte;
-				return 0;
-			}
-			singleWheelEraseAll();
-			return -1;
-		}
-
-		if (currentAction == '\0') {
-
-			if (isValidAction(byte)) {
-				currentAction = byte;
-				return 0;
-			}
-			singleWheelEraseAll();
-			return -1;
-		}
-
-		if (!isRefFirstByteIn) {
-			isRefFirstByteIn = 1;
-			currentReferenceFirstByte = byte;
+		if (isValidMotor(byte)) {
+			currentMotor = byte;
 			return 0;
 		}
-
-		if (!isRefIn) {
-			uint16_t ref = (uint16_t)currentReferenceFirstByte << 8 | byte;
-			if (isValidRef(ref)) {
-				isRefIn = 1;
-				currentReferenceSecondByte = byte;
-				currentReference = ref;
-				return 0;
-			}
-			singleWheelEraseAll();
-			return -1;
-		}
-
-		if (!isMaxTickFirstByteIn) {
-			isMaxTickFirstByteIn = 1;
-			currentMaxTickFirstByte = byte;
-			return 0;
-		}
-
-		if (!isMaxTickIn) {
-			uint16_t max_tick = (uint16_t)currentMaxTickFirstByte << 8 | byte;
-			if (isValidTickMax(max_tick)) {
-				isMaxTickIn = 1;
-				currentMaxtTickSecondByte = byte;
-				currentMaxTick = max_tick;
-				return 0;
-			}
-			singleWheelEraseAll();
-			return -1;
-		}
-
-		if (isValidChecksum(byte)) {
-			currentChecksum = byte;
-
-			instruction -> currentMotor = (uint16_t)currentMotor;
-			instruction -> currentAction = (uint16_t)currentAction;
-			instruction -> currentReference = (uint16_t)currentReference;
-			instruction -> currentMaxTick = (uint16_t)currentMaxTick;
-			instruction -> currentChecksum = (uint16_t)currentChecksum;
-
-			singleWheelEraseAll();
-			return 1;
-		}
-
 		singleWheelEraseAll();
 		return -1;
+	}
+
+	if (currentAction == '\0') {
+
+		if (isValidAction(byte)) {
+			currentAction = byte;
+			return 0;
+		}
+		singleWheelEraseAll();
+		return -1;
+	}
+
+	if (!isRefFirstByteIn) {
+		isRefFirstByteIn = 1;
+		currentReferenceFirstByte = byte;
+		return 0;
+	}
+
+	if (!isRefIn) {
+		uint16_t ref = (uint16_t)currentReferenceFirstByte << 8 | byte;
+		if (isValidRef(ref)) {
+			isRefIn = 1;
+			currentReferenceSecondByte = byte;
+			currentReference = ref;
+			return 0;
+		}
+		singleWheelEraseAll();
+		return -1;
+	}
+
+	if (!isMaxTickFirstByteIn) {
+		isMaxTickFirstByteIn = 1;
+		currentMaxTickFirstByte = byte;
+		return 0;
+	}
+
+	if (!isMaxTickIn) {
+		uint16_t max_tick = (uint16_t)currentMaxTickFirstByte << 8 | byte;
+		if (isValidTickMax(max_tick)) {
+			isMaxTickIn = 1;
+			currentMaxtTickSecondByte = byte;
+			currentMaxTick = max_tick;
+			return 0;
+		}
+		singleWheelEraseAll();
+		return -1;
+	}
+
+	if (isValidChecksum(byte)) {
+		currentChecksum = byte;
+
+		instruction -> currentMotor = (uint16_t)currentMotor;
+		instruction -> currentAction = (uint16_t)currentAction;
+		instruction -> currentReference = (uint16_t)currentReference;
+		instruction -> currentMaxTick = (uint16_t)currentMaxTick;
+		instruction -> currentChecksum = (uint16_t)currentChecksum;
+
+		singleWheelEraseAll();
+		return 1;
+	}
+
+	singleWheelEraseAll();
+	return -1;
 }

@@ -52,6 +52,7 @@ void do_motor_control(uint32_t p_sampling_frequency) {
 					int motor_index = (int) motor;
 					references[motor_index - 1] = reference;
 					maxTicks[motor_index - 1] = max_tick;
+					totalTick[motor_index - 1] = 0;
 
 					int current_action = actions[motor_index - 1];
 					if (action != current_action) {
@@ -61,7 +62,18 @@ void do_motor_control(uint32_t p_sampling_frequency) {
 					set_motor_action(motor_index, action);
     			}
     			else if (container.instructionType == INSTRUCTION_ALLWHEELS) {
-    				// changer les 4 roues
+    				for (int motor = 0; motor < 4; motor++) {
+    					int new_action = container.allWheelInstruction.actions[motor];
+
+    					if (new_action != actions[motor]) {
+    						cumulativesErr[motor] = 0;
+    					}
+    					actions[motor] = new_action;
+    					set_motor_action(motor + 1, new_action);
+    					references[motor] = container.allWheelInstruction.speeds[motor];
+    					maxTicks[motor] = container.allWheelInstruction.max_ticks[motor];
+    					totalTick[motor] = 0;
+    				}
     			}
     		}
     	}
