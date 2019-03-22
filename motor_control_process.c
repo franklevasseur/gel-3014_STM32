@@ -1,13 +1,16 @@
 #include "motor_control_process.h"
 
 #define MAX_SPEED 10400
+#define MIN_SPEED 1000
 #define DEBUG_MOTOR 1
 #define TRANS_UART 0
+#define REDUCE_SPEED 1
 
 double commands[4] = {0, 0, 0, 0};
 double references[4] = {0, 0, 0, 0};
 double kp = 1;
 double ki = 2;
+float k_reduce_speed = 0.5;
 double cumulativesErr[4] = {0, 0, 0, 0};
 uint32_t totalTick[4] = {0, 0, 0, 0};
 uint32_t maxTicks[4] = {-1, -1, -1, -1};
@@ -16,6 +19,7 @@ uint32_t sampling_frequency;
 
 void absoluteCounts(int32_t counts[]);
 void blockAllWheels();
+void reduceSpeed(uint8_t motor, int32_t current_speed);
 
 void do_motor_control(uint32_t p_sampling_frequency) {
 
@@ -93,13 +97,10 @@ void controlMotors(void)
 		if (totalTick[motor] >= maxTicks[motor]) {
 			blockAllWheels();
 		} else {
-			if (totalTick[motor] >= (maxTicks[motor] - references[motor]/2)) {
-				references[motor] = (maxTicks[motor] - totalTick[motor])*2;
-				if(references[motor] < 300) {
-					references[motor] = 300;
-				}
-			}
 			int32_t ticksPerSecond = counts[motor] * sampling_frequency;
+			if (REDUCE_SPEED) {
+				reduceSpeed(motor, ticksPerSecond);
+			}
 			int32_t residual = references[motor] - ticksPerSecond;
 			cumulativesErr[motor] += (double)residual / sampling_frequency;
 			commands[motor] = (residual * kp) + (cumulativesErr[motor] * ki);
@@ -129,6 +130,8 @@ void controlMotors(void)
 	}
 
 
+
+
 	resetCounts();
 }
 
@@ -148,5 +151,16 @@ void blockAllWheels() {
 		references[motor] = 0;
 		cumulativesErr[motor] = 0;
 		totalTick[motor] = 0;
+	}
+}
+
+void reduceSpeed(uint8_t motor, int32_t current_speed) {
+	if (totalTick[motor] >= (maxTicks[motor] / 2)) {
+		uint32_t distance_left = maxTicks[motor] - totalTick[motor];
+		uint32_t delta_speed = k_reduce_speed * (current_speed * current_speed) / (distance_left * sampling_frequency);
+		references[motor] -= delta_speed;
+		if(references[motor] < MIN_SPEED) {
+			references[motor] = MIN_SPEED;
+		}
 	}
 }
