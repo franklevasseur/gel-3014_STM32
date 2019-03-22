@@ -93,6 +93,12 @@ void controlMotors(void)
 		if (totalTick[motor] >= maxTicks[motor]) {
 			blockAllWheels();
 		} else {
+			if (totalTick[motor] >= (maxTicks[motor] - references[motor]/2)) {
+				references[motor] = (maxTicks[motor] - totalTick[motor])*2;
+				if(references[motor] < 300) {
+					references[motor] = 300;
+				}
+			}
 			int32_t ticksPerSecond = counts[motor] * sampling_frequency;
 			int32_t residual = references[motor] - ticksPerSecond;
 			cumulativesErr[motor] += (double)residual / sampling_frequency;
